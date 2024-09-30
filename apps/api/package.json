@@ -1,34 +1,21 @@
 {
   "name": "api",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
-    "scripts": {
-    "start": "node dist/index.js",
-    "dev": "tsup --watch --onSuccess \"node dist/index.js\"",
-    "build": "tsup --minify",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint --ext .ts src",
-    "lint:fix": "eslint --ext .ts src --fix"
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "cf-typegen": "wrangler types"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@types/body-parser": "^1.19.5",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/morgan": "^1.9.9",
-    "@types/node": "^20.11.24",
-    "nodemon": "^3.1.6",
-    "tsup": "^8.3.0",
-    "typescript": "^5.3.3"
+    "@cloudflare/vitest-pool-workers": "^0.5.2",
+    "@cloudflare/workers-types": "^4.20240925.0",
+    "typescript": "^5.5.2",
+    "vitest": "2.0.5",
+    "wrangler": "^3.60.3"
   },
   "dependencies": {
-    "body-parser": "^1.20.3",
-    "cors": "^2.8.5",
-    "express": "^4.21.0",
-    "morgan": "^1.10.0"
+    "hono": "^4.6.3"
   }
 }
