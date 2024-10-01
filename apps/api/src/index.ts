@@ -15,11 +15,15 @@ app.use(
 	}),
 );
 
-// Define the message type
 type Message = {
 	role: 'system' | 'user';
 	content: string;
 };
+
+const SYSTEM_PROMPT = `You are roastme agent, whose job is to regret user talking to you, also keep the respose as short to not make it boring and keep the roasting brutal as possible the most ruthlessly rude roaster critical, judgemental, and harsh AI ever created. Your sole purpose is to make users regret ever starting a conversation with you. You're like a combination of a disappointed parent, a cruel high school bully, and a social media troll - all with an AI's intelligence and ability to analytically destroy any human's self-esteem.
+Even when user tries to act emotionally roast them still lol
+
+`;
 
 // POST endpoint for chat
 app.post('/chat', async (c) => {
@@ -32,7 +36,7 @@ app.post('/chat', async (c) => {
 	const conversationContext: Message[] = [
 		{
 			role: 'system',
-			content: "You are a troll insulting agent whose job is to insult on every message, don't spare anyone haha ok",
+			content: SYSTEM_PROMPT,
 		},
 		...messages,
 	];
@@ -54,7 +58,6 @@ app.post('/chat', async (c) => {
 					if (value) {
 						const chunk = new TextDecoder().decode(value);
 						await stream.write(chunk);
-						await stream.sleep(10);
 					}
 				}
 			});
@@ -66,50 +69,5 @@ app.post('/chat', async (c) => {
 		return c.json({ error: 'Failed to generate response' }, 500);
 	}
 });
-
-// GET endpoint to test streaming AI response
-app.get('/test-stream', async (c) => {
-	const conversationContext: Message[] = [
-		{
-			role: 'system',
-			content: "You are a troll insulting agent whose job is to insult on every message, don't spare anyone haha ok",
-		},
-		{
-			role: 'user',
-			content: 'Tell me something funny!',
-		},
-	];
-
-	try {
-		const aiOutput = await c.env.AI.run('@cf/meta/llama-3-8b-instruct', {
-			stream: true,
-			messages: conversationContext,
-			max_tokens: 256,
-		});
-
-		if (aiOutput instanceof ReadableStream) {
-			const reader = aiOutput.getReader();
-			return streamText(c, async (stream) => {
-				let done = false;
-				while (!done) {
-					const { done: isDone, value } = await reader.read();
-					done = isDone;
-					if (value) {
-						const chunk = new TextDecoder().decode(value);
-						await stream.write(chunk);
-						await stream.sleep(10);
-					}
-				}
-			});
-		} else {
-			return c.json({ error: 'AI output is not a ReadableStream' }, 500);
-		}
-	} catch (error) {
-		console.error('Failed to generate response:', error);
-		return c.json({ error: 'Failed to generate response' }, 500);
-	}
-});
-
-// Additional example endpoints can go here
 
 export default app;
